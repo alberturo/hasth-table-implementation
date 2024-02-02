@@ -32,28 +32,33 @@ class HashTable {
   }
 
   insert(key, value) {
-    let index = this.hashMod(key);
-    let newTable = new KeyValuePair(key, value);
-    // console.log("INDEX-> ", index);
-    // console.log("NEWTABLE-> ", newTable);
-    if (!this.data[index]) {
-      this.data[index] = newTable;
-    } else {
-      if (this.data[index].key === newTable.key) {
-        this.data[index] = newTable;
-      } else {
-        let curr = this.data[index];
-        while (curr.next) {
-          curr.next = curr;
+    let idx = this.hashMod(key);
+    let kvp = new KeyValuePair(key, value);
+    if (!this.data[idx]) this.data[idx] = kvp;
+    else {
+      let curr = this.data[idx];
+      while (curr) {
+        if (curr.key === key) {
+          curr.value = value;
+          return;
         }
-        curr.next = newTable;
+        curr = curr.next;
       }
+      kvp.next = this.data[idx];
+      this.data[idx] = kvp;
     }
     this.count++;
   }
 
   read(key) {
-    // Your code here
+    let idx = this.hashMod(key);
+    if (!this.data[idx]) return undefined;
+    let curr = this.data[idx];
+    while (curr) {
+      if (curr.key === key) return curr.value;
+      curr = curr.next;
+    }
+    return undefined;
   }
 
   resize() {
